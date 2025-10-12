@@ -1,6 +1,6 @@
 ## 1. Удалить дубли из хеша
 
-```
+```perl
 sub delete_duplicate_values($hash) {
     my %seen;
     while (my ($key, $val) = each %$hash) {
