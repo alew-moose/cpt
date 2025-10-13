@@ -1,5 +1,17 @@
 #!/usr/bin/env perl
 use v5.42;
+use utf8;
+
+=encoding UTF-8
+
+Написал два класса для генерации аксессоров: на основе хешей (Accessor::Hash) и на основе массивов (Accessor::Array).
+Accessor::Array работает немного быстрее, но не поддерживает наследование.
+Например, если базовый и дочерний класс генерируют аксессоры используя Accessor::Array,
+то аксессоры родительского и дочернего классов будут конфликтовать (использовать одни и те же элементы массива).
+У Class::Accessor::Faster такая же проблема.
+В реальной разработке можно использовать Class::Tiny, Class::Accessor, Class::Struct. Если нужна более мощная OO-система, можно использовать Moose или Moo
+
+=cut
 
 package Accessor::Hash;
 use Carp 'croak';
@@ -88,7 +100,7 @@ FooArray->make_accessors(qw(field));
 
 
 package main;
-use Benchmark qw(cmpthese timethese);
+use Benchmark qw(cmpthese);
 
 my $foo_hash = FooHash->new;
 my $foo_array = FooArray->new;
@@ -99,7 +111,7 @@ cmpthese(1e7, {
 });
 
 cmpthese(1e7, {
-    array_setter => sub { $foo_array->field(42) },
     hash_setter  => sub { $foo_hash->field(42) },
+    array_setter => sub { $foo_array->field(42) },
 });
 

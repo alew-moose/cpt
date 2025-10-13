@@ -89,7 +89,7 @@ sub http_get_async($host, $port, $path, $query, $timeout) {
                 $can_read[0]->recv($buffer, 1024) // die 'recv failed';
                 last;
             }
-            push @numbers, $_ for 0..1000;
+            push @numbers, $_ for 1..1000;
         }
         last if length($buffer)  == 0;
         $resp .= $buffer;

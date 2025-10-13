@@ -45,3 +45,4 @@ cmpthese(100, {
     binary_search => sub { find_closest($array, 500_000) },
 });
 
+

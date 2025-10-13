@@ -18,18 +18,15 @@ sub deal_cards {
     my $deck = new_deck();
     @$deck = shuffle @$deck;
     my (@pocket, @community);
-    for my $n (0..8) {
+    for (0..8) {
         push @pocket, [splice @$deck, 0, 2];
     }
     @community = splice @$deck, 0, 5;
     return \@pocket, \@community;
 }
 
-
 my ($pocket, $community) = deal_cards();
 for my $p (0..$#$pocket) {
     say "Player $p: @{$pocket->[$p]}";
 }
 say "Community: @$community";
-
-

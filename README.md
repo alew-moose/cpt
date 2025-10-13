@@ -131,6 +131,7 @@ while (1) {
 
 ## 7. HTTP запрос
 [p7.pl](p7.pl)
+Сервер написал на go, запускается `go run server.go`
 
 ## 8. Наследование
 Будут вызваны функции DD::func, BB::func, AA::func. Чтобы были вызваны функции во всех классах иерархии, можно использовать mro::next::method:
@@ -155,3 +156,17 @@ use mro;
 DD->func;
 ```
 тогда будут вызваны функции DD::func, BB::func, CC::func, AA::func.
+
+
+## 9. Поиск в массиве
+[p9.pl](p9.pl)
+
+
+## Общие вопросы
+
+В качестве web framework использовал mojolicious. Для базы Mojo::Pg, для дат DateTime. Постоянно использую Data::Printer
+
+## Игровой чат
+
+## Раздача карт
+[deal_cards.pl](deal_cards.pl)
