@@ -84,7 +84,7 @@ sub http_get_async($host, $port, $path, $query, $timeout) {
     while (1) {
         my $buffer = "";
         while (1) {
-        die "timed out\n" if tv_interval($start_ts) > $timeout;
+            die "timed out\n" if tv_interval($start_ts) > $timeout;
             my @can_read = $select->can_read(0);
             if (@can_read) {
                 $can_read[0]->recv($buffer, 1024) // die 'recv failed';
