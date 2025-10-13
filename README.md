@@ -1,3 +1,5 @@
+# Тестовое задание
+
 ## 1. Удалить дубли из хеша
 
 ```perl
@@ -89,8 +91,8 @@ my $limit = 10000; # размер порции данных
 
 while (1) {
   my $rows = get_data($last_id, $limit);
-  last unless @$rows;
-  process_data($rows);
+  process_data($rows) if @$rows;
+  last if @$rows < $limit;
   $last_id = $rows[-1]{id};
 }
 
@@ -130,7 +132,9 @@ while (1) {
 ```
 
 ## 7. HTTP запрос
+
 [p7.pl](p7.pl)
+
 Сервер написал на go, запускается `go run server.go`
 
 ## 8. Наследование
@@ -164,9 +168,12 @@ DD->func;
 
 ## Общие вопросы
 
-В качестве web framework использовал mojolicious. Для базы Mojo::Pg, для дат DateTime. Постоянно использую Data::Printer
+В качестве web framework использовал mojolicious. Для базы Mojo::Pg, для дат DateTime. Постоянно использую Data::Printer, Devel::Cycle, Devel::Peek
 
 ## Игровой чат
+Чат можно реализовать используя веб-сокеты.
+Когда приходит сообщение от клиента, рассылаем его всем подключенным клиентам.
+Можно хранить все сообщения на сервере, чтобы при разрыве соединения и последующем переподключении клиента высылать ему все пропущенные сообщения.
 
 ## Раздача карт
 [deal_cards.pl](deal_cards.pl)

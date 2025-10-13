@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 use v5.42;
+use utf8;
 use List::Util qw(shuffle);
 use Crypt::PRNG;
 
@@ -14,6 +15,7 @@ sub new_deck {
 }
 
 sub deal_cards {
+    # используем Crypt::PRNG::rand для перемешивания массива
     local $List::Util::RAND = Crypt::PRNG::rand;
     my $deck = new_deck();
     @$deck = shuffle @$deck;
@@ -27,6 +29,6 @@ sub deal_cards {
 
 my ($pocket, $community) = deal_cards();
 for my $p (0..$#$pocket) {
-    say "Player $p: @{$pocket->[$p]}";
+    printf "Player %d: %s\n", $p+1, "@{$pocket->[$p]}";
 }
 say "Community: @$community";

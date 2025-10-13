@@ -44,6 +44,7 @@ sub http_get($host, $port, $path, $query, $timeout) {
         my ($header, $body) = split "\r\n\r\n", $resp, 2;
 
         my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)\r\n};
+        die 'failed to parse header' unless $resp_code && $resp_msg;
         die "$resp_code $resp_msg" unless $resp_code == 200;
         return $body;
     };
@@ -100,6 +101,7 @@ sub http_get_async($host, $port, $path, $query, $timeout) {
     my ($header, $body) = split "\r\n\r\n", $resp, 2;
 
     my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)\r\n};
+    die 'failed to parse header' unless $resp_code && $resp_msg;
     die "$resp_code $resp_msg" unless $resp_code == 200;
 
     return $body;
