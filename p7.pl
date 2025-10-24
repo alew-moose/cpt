@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use v5.42;
 use utf8;
-use IO::Socket qw(AF_INET SOCK_STREAM SHUT_WR);
+use IO::Socket qw(AF_INET SOCK_STREAM SHUT_WR :crlf);
 use IO::Select;
 use URI::Escape;
 use Time::HiRes qw(alarm gettimeofday tv_interval);
@@ -29,7 +29,7 @@ sub http_get($host, $port, $path, $query, $timeout) {
             $url .= '?' . join('&', @params);
         }
 
-        $sock->send("GET $url HTTP/1.1\r\nHost:$host\r\nConnection:close\r\n\r\n") // die "send failed: $!";
+        $sock->send("GET $url HTTP/1.1\r\nHost:$host${CRLF}Connection:close$CRLF$CRLF") // die "send failed: $!";
         $sock->shutdown(SHUT_WR) // die "shutdown failed: $!";
 
         my $resp = "";
@@ -41,9 +41,9 @@ sub http_get($host, $port, $path, $query, $timeout) {
         }
         $sock->close() // die "close failed: $!";
 
-        my ($header, $body) = split "\r\n\r\n", $resp, 2;
+        my ($header, $body) = split "$CRLF$CRLF", $resp, 2;
 
-        my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)\r\n};
+        my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)$CRLF};
         die 'failed to parse header' unless $resp_code && $resp_msg;
         die "$resp_code $resp_msg" unless $resp_code == 200;
         alarm 0;
@@ -76,7 +76,7 @@ sub http_get_async($host, $port, $path, $query, $timeout) {
         $url .= '?' . join('&', @params);
     }
 
-    $sock->send("GET $url HTTP/1.1\r\nHost:$host\r\nConnection:close\r\n\r\n") // die "send failed: $!";
+    $sock->send("GET $url HTTP/1.1\r\nHost:$host${CRLF}Connection:close$CRLF$CRLF") // die "send failed: $!";
     $sock->shutdown(SHUT_WR) // die "shutdown failed: $!";
 
     my $resp = "";
@@ -99,9 +99,9 @@ sub http_get_async($host, $port, $path, $query, $timeout) {
     $sock->close() // die "close failed: $!";
     printf STDERR "added %d numbers while waiting\n", scalar @numbers;
 
-    my ($header, $body) = split "\r\n\r\n", $resp, 2;
+    my ($header, $body) = split "$CRLF$CRLF", $resp, 2;
 
-    my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)\r\n};
+    my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)$CRLF};
     die 'failed to parse header' unless $resp_code && $resp_msg;
     die "$resp_code $resp_msg" unless $resp_code == 200;
 
