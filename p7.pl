@@ -1,6 +1,9 @@
 #!/usr/bin/env perl
 use v5.42;
 use utf8;
+use open qw(:std :encoding(UTF-8));
+use Encode qw(decode);
+use Carp qw(croak);
 use IO::Socket qw(AF_INET SOCK_STREAM SHUT_WR :crlf);
 use IO::Select;
 use URI::Escape;
@@ -43,9 +46,10 @@ sub http_get($host, $port, $path, $query, $timeout) {
 
         my ($header, $body) = split "$CRLF$CRLF", $resp, 2;
 
-        my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)$CRLF};
-        die 'failed to parse header' unless $resp_code && $resp_msg;
+        my ($resp_code, $resp_msg, $encoding) = parse_header($header);
         die "$resp_code $resp_msg" unless $resp_code == 200;
+        $body = decode($encoding, $body) if $encoding;
+
         alarm 0;
         return $body;
     };
@@ -101,13 +105,22 @@ sub http_get_async($host, $port, $path, $query, $timeout) {
 
     my ($header, $body) = split "$CRLF$CRLF", $resp, 2;
 
-    my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)$CRLF};
-    die 'failed to parse header' unless $resp_code && $resp_msg;
+    my ($resp_code, $resp_msg, $encoding) = parse_header($header);
     die "$resp_code $resp_msg" unless $resp_code == 200;
+    $body = decode($encoding, $body) if $encoding;
 
     return $body;
 }
 
+sub parse_header($header) {
+    my ($resp_code, $resp_msg) = $header =~ m{^HTTP/1.1 (\d\d\d) (.*)$CRLF};
+    croak 'failed to parse header' unless $resp_code && $resp_msg;
+    my $encoding;
+    if ($header =~ /^content-type:.*charset=(.+)$CRLF/mi) {
+        $encoding = $1;
+    }
+    return ($resp_code, $resp_msg, $encoding);
+}
 
 eval {
     # time out
